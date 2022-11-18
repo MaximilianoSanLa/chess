@@ -120,6 +120,16 @@ class Ui_Form(object):
         self.checkCoordsYes.setText(_translate("Form", "Mostrar Coordenadas"))
         self.checkCoordsNot.setText(_translate("Form", "Ocultar Coordenadas"))
         self.start=False
+        self.checkCoordsYes.clicked.connect(self.checkt)
+        self.checkCoordsNot.clicked.connect(self.checkN)
+    def checkt(self):
+        self.tableWidget.verticalHeader().setVisible(True)
+        self.lblCoords.setVisible(True)
+        pass
+    def checkN(self):
+        self.tableWidget.verticalHeader().setVisible(False)
+        self.lblCoords.setVisible(False)
+        pass
     def eventFilter(self):
         if(self.start==True):
             _translate = QtCore.QCoreApplication.translate
