@@ -9,8 +9,9 @@
 
 import time
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow,QTableWidgetItem
-
+from PyQt5.QtWidgets import QApplication, QMainWindow,QTableWidgetItem, QAction, QLineEdit, QMessageBox,QPushButton
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import pyqtSlot
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -90,11 +91,34 @@ class Ui_Form(object):
         self.checkCoordsNot.setFont(font)
         self.checkCoordsNot.setAutoExclusive(True)
         self.checkCoordsNot.setObjectName("checkCoordsNot")
-
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
+        self.string="rnbkqbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR"
+        colcount=0
+        rowcount=0
+        for i in self.string:
+            if(i=='/')and(colcount==8):
+                colcount=0
+                rowcount+=1
+            elif(colcount<8)and(i=='/'):
+                print("Error sin suficiente espacios en fila: "+str(rowcount))
+                return
+            elif(rowcount>self.rownums):
+                print("Error en collumna: "+str(colcount))
+                return
+            elif(colcount>self.rownums):
+                print("Error en fila: "+str(rowcount))
+                return
+            elif(ord (i)>=97)and(ord (i)<=122):
+                colcount+=1
+            elif(ord(i)>=65 and(ord(i)<=132)):
+                colcount+=1
+            elif(ord(i)>48 and ord(i)<58):
+                colcount+=int(i)
+            
+
         self.blancas=True
         self.timestart=0
         self.timetotal=3600
@@ -110,7 +134,7 @@ class Ui_Form(object):
         for i in range(self.colnums):
             self.tableWidget.setColumnWidth(i, 71)
         self.tableWidget.cellClicked.connect(self.eventFilter)
-        self.lblCoords.setText(_translate("Form", "A  B  C  D  E  F  G  H"))
+        self.lblCoords.setText(_translate("Form", "H  G  F  E  D  C  B  A"))
         self.lblCelda.setText(_translate("Form", "¿Listo?"))
         self.btnStart.setText(_translate("Form", "Comenzar"))
         self.btnStart.clicked.connect(self.clicked)
@@ -122,6 +146,7 @@ class Ui_Form(object):
         self.start=False
         self.checkCoordsYes.clicked.connect(self.checkt)
         self.checkCoordsNot.clicked.connect(self.checkN)
+
     def checkt(self):
         self.tableWidget.verticalHeader().setVisible(True)
         self.lblCoords.setVisible(True)
@@ -130,6 +155,10 @@ class Ui_Form(object):
         self.tableWidget.verticalHeader().setVisible(False)
         self.lblCoords.setVisible(False)
         pass
+    def on_click(self):
+        textboxValue = self.textbox.text()
+        QMessageBox.question(self, 'Message - pythonspot.com', "You typed: " + textboxValue, QMessageBox.Ok, QMessageBox.Ok)
+        self.textbox.setText("")
     def eventFilter(self):
         if(self.start==True):
             _translate = QtCore.QCoreApplication.translate
@@ -1126,29 +1155,75 @@ class Ui_Form(object):
                             return
     def clicked(self):
         self.timetotal=3600
-        for i in range(self.rownums):
-            for j in range(self.colnums):
-             self.tableWidget.setItem(j, i, None)
-        self.tableWidget.setItem(0, 4, QTableWidgetItem(u'\u2654'))
-        self.tableWidget.setItem(0, 3, QTableWidgetItem(u'\u2655'))
-        self.tableWidget.setItem(0, 5, QTableWidgetItem(u'\u2657'))
-        self.tableWidget.setItem(0, 2, QTableWidgetItem(u'\u2657'))
-        self.tableWidget.setItem(0, 1, QTableWidgetItem(u'\u2658'))
-        self.tableWidget.setItem(0, 6, QTableWidgetItem(u'\u2658'))
-        self.tableWidget.setItem(0, 0, QTableWidgetItem(u'\u2656'))
-        self.tableWidget.setItem(0, 7, QTableWidgetItem(u'\u2656'))
-        self.tableWidget.setItem(7, 4, QTableWidgetItem(u'\u265A'))
-        self.tableWidget.setItem(7, 3, QTableWidgetItem(u'\u265B'))
-        self.tableWidget.setItem(7, 5, QTableWidgetItem(u'\u265D'))
-        self.tableWidget.setItem(7, 2, QTableWidgetItem(u'\u265D'))
-        self.tableWidget.setItem(7, 1, QTableWidgetItem(u'\u265E'))
-        self.tableWidget.setItem(7, 6, QTableWidgetItem(u'\u265E'))
-        self.tableWidget.setItem(7, 0, QTableWidgetItem(u'\u265C'))
-        self.tableWidget.setItem(7, 7, QTableWidgetItem(u'\u265C'))
-        for i in range(self.rownums):
-            self.tableWidget.setItem(6, i, QTableWidgetItem(u'\u265F'))
-        for i in range(self.rownums):
-            self.tableWidget.setItem(1, i, QTableWidgetItem(u'\u2659'))
+        columnacount=0
+        rowcount=0
+        for i in range(int(len(self.string))):
+            if(self.string[i]=='/'):
+                columnacount=0
+                rowcount+=1
+            elif(self.string[i]=='r'):
+                self.tableWidget.setItem(rowcount,columnacount,QTableWidgetItem(u'\u2656'))
+                columnacount+=1
+            elif(self.string[i]=='k'):
+                self.tableWidget.setItem(rowcount,columnacount,QTableWidgetItem(u'\u2654'))
+                columnacount+=1
+            elif(self.string[i]=='q'):
+                self.tableWidget.setItem(rowcount,columnacount,QTableWidgetItem(u'\u2655'))
+                columnacount+=1
+            elif(self.string[i]=='n'):
+                self.tableWidget.setItem(rowcount,columnacount,QTableWidgetItem(u'\u2658'))
+                columnacount+=1
+            elif(self.string[i]=='b'):
+                self.tableWidget.setItem(rowcount,columnacount,QTableWidgetItem(u'\u2657'))
+                columnacount+=1
+            elif(self.string[i]=='p'):
+                columnacount+=1
+                self.tableWidget.setItem(rowcount,columnacount,QTableWidgetItem(u'\u2659'))
+            elif(self.string[i]=='R'):
+                self.tableWidget.setItem(rowcount,columnacount,QTableWidgetItem(u'\u265C'))
+                columnacount+=1
+            elif(self.string[i]=='K'):
+                self.tableWidget.setItem(rowcount,columnacount,QTableWidgetItem(u'\u265A'))
+                columnacount+=1
+            elif(self.string[i]=='Q'):
+                self.tableWidget.setItem(rowcount,columnacount,QTableWidgetItem(u'\u265B'))
+                columnacount+=1
+            elif(self.string[i]=='N'):
+                self.tableWidget.setItem(rowcount,columnacount,QTableWidgetItem(u'\u265E'))
+                columnacount+=1
+            elif(self.string[i]=='B'):
+                self.tableWidget.setItem(rowcount,columnacount,QTableWidgetItem(u'\u265D'))
+                columnacount+=1
+            elif(self.string[i]=='P'):
+                columnacount+=1
+                self.tableWidget.setItem(rowcount,columnacount,QTableWidgetItem(u'\u265F'))
+            elif(ord(self.string[i])>48 and ord(self.string[i])<58):
+                for j in range(int(self.string[i])):
+                    self.tableWidget.setItem(rowcount,columnacount+j,None)
+                columnacount+=int(self.string[i])
+        #for i in range(self.rownums):
+        #    for j in range(self.colnums):
+        #     self.tableWidget.setItem(j, i, None)
+        #self.tableWidget.setItem(0, 4, QTableWidgetItem(u'\u2654'))
+        #self.tableWidget.setItem(0, 3, QTableWidgetItem(u'\u2655'))
+        #self.tableWidget.setItem(0, 5, QTableWidgetItem(u'\u2657'))
+        #self.tableWidget.setItem(0, 2, QTableWidgetItem(u'\u2657'))
+        #self.tableWidget.setItem(0, 1, QTableWidgetItem(u'\u2658'))
+        #self.tableWidget.setItem(0, 6, QTableWidgetItem(u'\u2658'))
+        #self.tableWidget.setItem(0, 0, QTableWidgetItem(u'\u2656'))
+        #self.tableWidget.setItem(0, 7, QTableWidgetItem(u'\u2656'))
+        #self.tableWidget.setItem(7, 4, QTableWidgetItem(u'\u265A'))
+        #self.tableWidget.setItem(7, 3, QTableWidgetItem(u'\u265B'))
+        #self.tableWidget.setItem(7, 5, QTableWidgetItem(u'\u265D'))
+        #self.tableWidget.setItem(7, 2, QTableWidgetItem(u'\u265D'))
+        #self.tableWidget.setItem(7, 1, QTableWidgetItem(u'\u265E'))
+        #self.tableWidget.setItem(7, 6, QTableWidgetItem(u'\u265E'))
+        #self.tableWidget.setItem(7, 0, QTableWidgetItem(u'\u265C'))
+        #self.tableWidget.setItem(7, 7, QTableWidgetItem(u'\u265C'))
+        #for i in range(self.rownums):
+        #    self.tableWidget.setItem(6, i, QTableWidgetItem(u'\u265F'))
+        #for i in range(self.rownums):
+        #    self.tableWidget.setItem(1, i, QTableWidgetItem(u'\u2659'))
         self.start=True
         self.timestart=time.time()
 
